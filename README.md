@@ -22,13 +22,17 @@ spec:
           containers:
           - name: hello
             image: busybox:1.28
-            imagePullPolicy: IfNotPresent
             command:
             - /bin/sh
             - -c
             - date; echo Hello from the Kubernetes cluster
-          restartPolicy: OnFailure
 ```
+
+## ToDo
+* Create a job based on custom resource.
+* Create jobs for each node.
+* Ensure jobs run on each node on schedule.
+
 ## Description
 // TODO(user): An in-depth paragraph about your project and overview of use
 
@@ -39,6 +43,11 @@ spec:
 ## Getting Started
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
+
+### Setting up the cluster
+```sh
+kind create cluster --config kind-config.yaml
+```
 
 ### Running on the cluster
 1. Install Instances of Custom Resources:
