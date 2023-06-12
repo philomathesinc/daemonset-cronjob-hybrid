@@ -8,9 +8,10 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - node
+  - nodes
   verbs:
   - list
+  - watch
 - apiGroups:
   - ""
   resources:
