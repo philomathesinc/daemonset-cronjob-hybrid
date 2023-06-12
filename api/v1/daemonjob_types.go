@@ -7,7 +7,7 @@ import (
 
 // DaemonjobSpec defines the desired state of Daemonjob
 type DaemonjobSpec struct {
-	corev1.PodTemplateSpec `json:",inline"`
+	PodSpec corev1.PodSpec `json:"podspec"`
 }
 
 // DaemonjobStatus defines the observed state of Daemonjob

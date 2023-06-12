@@ -35,12 +35,8 @@ spec:
           spec:
             description: DaemonjobSpec defines the desired state of Daemonjob
             properties:
-              metadata:
-                description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata'
-                type: object
-              spec:
-                description: 'Specification of the desired behavior of the pod. More
-                  info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status'
+              podspec:
+                description: PodSpec is a description of a pod.
                 properties:
                   activeDeadlineSeconds:
                     description: Optional duration in seconds the pod may be active
@@ -7121,6 +7117,8 @@ spec:
                 required:
                 - containers
                 type: object
+            required:
+            - podspec
             type: object
           status:
             description: DaemonjobStatus defines the observed state of Daemonjob

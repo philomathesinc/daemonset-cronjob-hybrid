@@ -9,4 +9,11 @@ metadata:
     app.kubernetes.io/created-by: daemonset-cronjob-hybrid
   name: daemonjob-sample
 spec:
-  # TODO(user): Add fields here
+  podspec:
+    containers:
+    - name: hello
+      image: busybox:1.28
+      command:
+      - /bin/sh
+      - -c
+      - date; echo Hello from the Kubernetes cluster
