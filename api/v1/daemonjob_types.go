@@ -1,19 +1,13 @@
 package v1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // DaemonjobSpec defines the desired state of Daemonjob
 type DaemonjobSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of Daemonjob. Edit daemonjob_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	corev1.PodTemplateSpec `json:",inline"`
 }
 
 // DaemonjobStatus defines the observed state of Daemonjob

@@ -9,6 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	demov1 "github.com/philomathesinc/daemonset-cronjob-hybrid/api/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // DaemonjobReconciler reconciles a Daemonjob object
@@ -20,19 +21,28 @@ type DaemonjobReconciler struct {
 //+kubebuilder:rbac:groups=demo.example.com,resources=daemonjobs,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=demo.example.com,resources=daemonjobs/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=demo.example.com,resources=daemonjobs/finalizers,verbs=update
+//+kubebuilder:rbac:groups=core,resources=pods,verbs=create;list;get;watch
+//+kubebuilder:rbac:groups=core,resources=node,verbs=list
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the Daemonjob object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.4/pkg/reconcile
 func (r *DaemonjobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
+	// Call kubernetes API to get nodes
+	var nodes corev1.NodeList
+	if err := r.List(ctx, &nodes); err != nil {
+		log.Error(err, "unable to fetch nodes")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	for _, n := range nodes.Items {
+		log.Info(n.Name)
+	}
+
+	// Daemonset -> Pod
+	// nodes = GetNodes()
+	// for _, node := range nodes {
+	// 		Create(pod)
+	// }
 	// TODO(user): your logic here
 
 	return ctrl.Result{}, nil
