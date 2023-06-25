@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
@@ -21,43 +22,53 @@ import (
 // 2. Run a busybox container exiting with 0.
 // 3. Running the pod every minute.
 func (r *DaemonjobReconciler) CreateCronJob(ctx context.Context, req ctrl.Request, log logr.Logger, daemonjob *demov1.Daemonjob) (ctrl.Result, error) {
-	if daemonjob.Status.LastRun != nil {
-	}
-
-	pod := &corev1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      req.Name,
-			Namespace: req.Namespace,
-		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:    "default",
-					Image:   "busybox",
-					Command: []string{"sh", "-c"},
-					Args: []string{
-						"sleep 3600",
+	createPod := func() {
+		pod := &corev1.Pod{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      req.Name + "-" + time.Now().GoString(),
+				Namespace: req.Namespace,
+			},
+			Spec: corev1.PodSpec{
+				Containers: []corev1.Container{
+					{
+						Name:    "default",
+						Image:   "busybox",
+						Command: []string{"sh", "-c"},
+						Args: []string{
+							"sleep 3600",
+						},
 					},
 				},
 			},
-		},
+		}
+
+		if err := ctrl.SetControllerReference(daemonjob, pod, r.Scheme); err != nil {
+			log.Error(err, "unable to set controller reference")
+		}
+
+		// call k8s api to create the pod
+		if err := r.Create(ctx, pod); err != nil {
+			log.Error(err, "unable to create pod")
+		}
+
+		ctime := metav1.Now()
+		daemonjob.Status.LastRun = &ctime
+
+		if err := r.Status().Update(ctx, daemonjob); err != nil {
+			log.Error(err, "unable to update status")
+		}
 	}
 
-	if err := ctrl.SetControllerReference(daemonjob, pod, r.Scheme); err != nil {
-		log.Error(err, "unable to set controller reference")
+	if daemonjob.Status.LastRun != nil {
+		nextRun := daemonjob.Status.LastRun.Time.Add(time.Minute)
+		if nextRun == time.Now() || nextRun.After(time.Now()) {
+			createPod()
+			return ctrl.Result{RequeueAfter: (30 * time.Second)}, nil
+		}
+
+		return ctrl.Result{Requeue: true}, nil
 	}
 
-	// call k8s api to create the pod
-	if err := r.Create(ctx, pod); err != nil {
-		log.Error(err, "unable to create pod")
-	}
-
-	ctime := metav1.Now()
-	daemonjob.Status.LastRun = &ctime
-
-	if err := r.Status().Update(ctx, daemonjob); err != nil {
-		log.Error(err, "unable to update status")
-	}
-
-	return ctrl.Result{}, nil
+	createPod()
+	return ctrl.Result{RequeueAfter: (30 * time.Second)}, nil
 }
