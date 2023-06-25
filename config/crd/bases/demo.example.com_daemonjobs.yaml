@@ -7122,6 +7122,12 @@ spec:
             type: object
           status:
             description: DaemonjobStatus defines the observed state of Daemonjob
+            properties:
+              lastrun:
+                format: date-time
+                type: string
+            required:
+            - lastrun
             type: object
         type: object
     served: true

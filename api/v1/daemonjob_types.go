@@ -12,6 +12,7 @@ type DaemonjobSpec struct {
 
 // DaemonjobStatus defines the observed state of Daemonjob
 type DaemonjobStatus struct {
+	LastRun *metav1.Time `json:"lastrun"`
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }

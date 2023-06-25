@@ -50,22 +50,22 @@ kind create cluster --config kind-config.yaml
 ```
 
 ### Running on the cluster
-1. Install Instances of Custom Resources:
-
-```sh
-kubectl apply -f config/samples/
-```
-
-2. Build and push your image to the location specified by `IMG`:
+1. Build and push your image to the location specified by `IMG`:
 
 ```sh
 make docker-build kind-load IMG=<some-registry>/daemonset-cronjob-hybrid:tag
 ```
 
-3. Deploy the controller to the cluster with the image specified by `IMG`:
+1. Deploy the controller to the cluster with the image specified by `IMG`:
 
 ```sh
 make deploy IMG=<some-registry>/daemonset-cronjob-hybrid:tag
+```
+
+1. Install Instances of Custom Resources:
+
+```sh
+kubectl apply -f config/samples/demo_v1_daemonjob.yaml
 ```
 
 ### Uninstall CRDs
