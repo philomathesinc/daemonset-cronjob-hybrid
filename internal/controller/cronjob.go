@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
+	"github.com/google/uuid"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -25,7 +26,7 @@ func (r *DaemonjobReconciler) CreateCronJob(ctx context.Context, req ctrl.Reques
 	createPod := func() {
 		pod := &corev1.Pod{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      req.Name + "-" + time.Now().GoString(),
+				Name:      req.Name + "-" + uuid.New().String(),
 				Namespace: req.Namespace,
 			},
 			Spec: corev1.PodSpec{
@@ -60,10 +61,10 @@ func (r *DaemonjobReconciler) CreateCronJob(ctx context.Context, req ctrl.Reques
 	}
 
 	if daemonjob.Status.LastRun != nil {
-		nextRun := daemonjob.Status.LastRun.Time.Add(time.Minute)
+		nextRun := daemonjob.Status.LastRun.Time.Add(10 * time.Second)
 		if nextRun == time.Now() || nextRun.After(time.Now()) {
 			createPod()
-			return ctrl.Result{RequeueAfter: (30 * time.Second)}, nil
+			return ctrl.Result{RequeueAfter: (3 * time.Second)}, nil
 		}
 
 		return ctrl.Result{Requeue: true}, nil

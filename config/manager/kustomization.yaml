@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: example.com/daemonset-cronjob-hybrid
-  newTag: v0.2
+  newTag: v0.3
