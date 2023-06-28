@@ -1,0 +1,19 @@
+apiVersion: demo.example.com/v1
+kind: Daemonjob
+metadata:
+  labels:
+    app.kubernetes.io/name: daemonjob
+    app.kubernetes.io/instance: daemonjob-sample
+    app.kubernetes.io/part-of: daemonset-cronjob-hybrid
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: daemonset-cronjob-hybrid
+  name: daemonjob-sample
+spec:
+  podspec:
+    containers:
+    - name: hello
+      image: busybox:1.28
+      command:
+      - /bin/sh
+      - -c
+      - date; echo Hello from the Kubernetes cluster
